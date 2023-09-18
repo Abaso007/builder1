@@ -9,8 +9,7 @@ def execute():
 		if blocks:
 			update_blocks(blocks)
 			frappe.db.set_value("Builder Page", web_page.name, "blocks", frappe.as_json(blocks, indent=None), update_modified=False)
-		draft_blocks = frappe.parse_json(web_page.draft_blocks)
-		if draft_blocks:
+		if draft_blocks := frappe.parse_json(web_page.draft_blocks):
 			update_blocks(draft_blocks)
 			frappe.db.set_value("Builder Page", web_page.name, "draft_blocks", frappe.as_json(blocks, indent=None), update_modified=False)
 
