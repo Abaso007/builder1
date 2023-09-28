@@ -193,8 +193,7 @@ def append_style(style_obj, style_tag, style_class, device="desktop"):
 
 def set_fonts(styles, font_map):
 	for style in styles:
-		font = style.get("fontFamily")
-		if font:
+		if font := style.get("fontFamily"):
 			if font in font_map:
 				if style.get("fontWeight") and style.get("fontWeight") not in font_map[font]["weights"]:
 					font_map[font]["weights"].append(style.get("fontWeight"))
@@ -208,15 +207,13 @@ def set_fonts_from_html(soup, font_map):
 		styles = tag.attrs.get("style").split(";")
 		for style in styles:
 			if "font-family" in style:
-				font = style.split(":")[1].strip()
-				if font:
+				if font := style.split(":")[1].strip():
 					font_map[font] = { "weights": ["400"] }
 
 def extend_with_component(block, data=None):
 	if block.get("extendedFromComponent"):
 		component = frappe.get_cached_value("Builder Component", block["extendedFromComponent"], ["block", "name"], as_dict=True)
-		component_block = frappe.parse_json(component.block)
-		if component_block:
+		if component_block := frappe.parse_json(component.block):
 			extend_block(component_block, block, data=data)
 			block = component_block
 
@@ -235,7 +232,7 @@ def extend_block(block, overridden_block, data=None):
 	component_children = block.get("children", [])
 	overridden_children = overridden_block.get("children", [])
 	for overridden_child in overridden_children:
-		component_child = next(
+		if component_child := next(
 			(
 				child
 				for child in component_children
@@ -246,8 +243,7 @@ def extend_block(block, overridden_block, data=None):
 				]
 			),
 			None,
-		)
-		if component_child:
+		):
 			extend_block(component_child, overridden_child, data=data)
 		else:
 			component_children.insert(overridden_children.index(overridden_child), overridden_child)
@@ -256,10 +252,8 @@ def extend_block(block, overridden_block, data=None):
 def extend_with_data(block, data):
 	if not data:
 		return
-	data_key = block.get("dataKey")
-	if data_key:
-		value = frappe.cstr(data.get((data_key.get("key"))))
-		if value:
+	if data_key := block.get("dataKey"):
+		if value := frappe.cstr(data.get((data_key.get("key")))):
 			if data_key.get("type") == "attribute":
 				block["attributes"][data_key.get("property")] = value
 			elif data_key.get("type") == "style":
@@ -274,8 +268,7 @@ def get_style_file_path():
 	import glob
 	folder_path = "./assets/website_builder/frontend/assets/"
 	file_pattern = "index.*.css"
-	matching_files = glob.glob(f"{folder_path}/{file_pattern}")
-	if matching_files:
+	if matching_files := glob.glob(f"{folder_path}/{file_pattern}"):
 		return frappe.utils.get_url(matching_files[0].lstrip("."))
 
 # def generate_tailwind_css_file_from_html(html):
